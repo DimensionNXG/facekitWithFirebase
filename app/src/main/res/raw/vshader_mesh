@@ -1,0 +1,10 @@
+uniform mat4 uProjectionM;
+uniform mat4 uModelM;
+attribute vec3 aPosition;
+
+varying vec3 vWorldPosition;
+
+void main(){
+    vWorldPosition = (uModelM * vec4(aPosition, 1.0)).xyz;
+	gl_Position = uProjectionM * vec4(vWorldPosition, 1.0);
+}

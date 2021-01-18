@@ -1,0 +1,16 @@
+#extension GL_OES_standard_derivatives : require
+
+precision mediump float;
+
+varying vec3 vWorldPosition;
+
+void main()
+{
+    vec3 dFdxPos = dFdx(vWorldPosition);
+    vec3 dFdyPos = dFdy(vWorldPosition);
+    vec3 faceNormal = normalize(cross(dFdxPos, dFdyPos));
+
+    float NdotL = max(0.0, dot(faceNormal, vec3(.0, .0, 1.0)));
+
+    gl_FragColor = vec4(NdotL, NdotL, NdotL, 1.0);
+}
