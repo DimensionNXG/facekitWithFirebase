@@ -8,16 +8,26 @@ import android.opengl.Matrix;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
+
+//import com.google.firebase.database.DatabaseReference;
+//import com.google.firebase.database.FirebaseDatabase;
+//import com.google.firebase.firestore.auth.User;
+
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.IgnoreExtraProperties;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.HashMap;
 import java.util.Locale;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
 
 import pinscreen.demo.R;
-import pinscreen.demo.gl.CameraRenderer;
 import pinscreen.facekit.FaceKit;
 import pinscreen.facekit.anchordata.FaceKitAnchorData;
 
@@ -71,6 +81,7 @@ public class CameraRenderer extends GLSurfaceView implements GLSurfaceView.Rende
     private float[] mModelMat = new float[16];
 
     private int mIboTriangles = -1;
+    private DatabaseReference mDatabase;
 
     public CameraRenderer(Context context) {
         super(context);
@@ -258,6 +269,33 @@ public class CameraRenderer extends GLSurfaceView implements GLSurfaceView.Rende
             GLES20.glVertexAttribPointer(aPosition, 2, GLES20.GL_FLOAT, false, 0, mLandmarks);
             GLES20.glEnableVertexAttribArray(aPosition);
             GLES20.glDrawArrays(GLES20.GL_POINTS, 0, 66);
+            //Firebase
+         //   mDatabase = FirebaseDatabase.getInstance().getReference("fackitdata");
+        //    String userId = mDatabase.push().getKey();
+            // creating user object
+            //User user = new User(mLandmarks, "prathamesh@ajnalens.com");
+          //  int a  = GLES20.GL_POINTS;
+
+// pushing user to 'users' node using the userId
+          //  mDatabase.child(userId).setValue(a);
+        }
+    }
+
+
+    @IgnoreExtraProperties
+    public class User {
+
+        public ByteBuffer name;
+        public String email;
+
+        // Default constructor required for calls to
+        // DataSnapshot.getValue(User.class)
+        public User() {
+        }
+
+        public User(ByteBuffer name, String email) {
+            this.name = name;
+            this.email = email;
         }
     }
 
@@ -345,6 +383,7 @@ public class CameraRenderer extends GLSurfaceView implements GLSurfaceView.Rende
                 mTriangles.put(mFaceKit.getTriangles());
                 mTriangles.position(0);
             }
+
             // update texture spec
             mTexTimestamp = anchorData.texture.timestamp;
             mTextureHandle = anchorData.texture.handle;
@@ -355,6 +394,7 @@ public class CameraRenderer extends GLSurfaceView implements GLSurfaceView.Rende
             mWorldFlipped = anchorData.texture.flipped;
             updateOrientation(anchorData);
 
+
             mLandmarks.order(ByteOrder.LITTLE_ENDIAN);
             mLandmarks.position(0);
             mLandmarks.asFloatBuffer().put(anchorData.landmarks, 0, 2 * 66);
@@ -364,9 +404,25 @@ public class CameraRenderer extends GLSurfaceView implements GLSurfaceView.Rende
             mPositions.put(mFaceKit.getPositions());
             mPositions.position(0);
 
+            mDatabase = FirebaseDatabase.getInstance().getReference("facekitdata");
+            String userId = mDatabase.push().getKey();
+            // creating user object
+            //User user = new User(mLandmarks, "prathamesh@ajnalens.com");
+//            float [] a  = anchorData.landmarks;
+
+// pushing user to 'users' node using the userId
+//            for(int i=0 ; i < a.length; i++) {
+//                mDatabase.child(userId).setValue(a[i]);
+//            }
+           // Toast.makeText(getContext(),"Landmarks"+ anchorData.landmarks, Toast.LENGTH_SHORT).show();
+
             StringBuilder stringBuilder = new StringBuilder();
             for (int i = 0; i < 51; i++) {
                 stringBuilder.append(String.format(Locale.US,"%s: %.2f\n", blendShapes[i], anchorData.blendShapes[i]));
+                Log.i("FaceKit","Blendshapes [" + i + "] = " + Float.toString(anchorData.blendShapes[i]) );
+                mDatabase.child("Blendshapes"+ i).setValue(Float.toString(anchorData.blendShapes[i]));
+                //Toast.makeText(getContext(),"BlendShapes["+i+"]= " + anchorData.blendShapes[i], Toast.LENGTH_LONG).show();
+
             }
 
             final String text = stringBuilder.toString();

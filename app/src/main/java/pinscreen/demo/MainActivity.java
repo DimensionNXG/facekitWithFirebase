@@ -28,7 +28,7 @@ import static android.content.pm.PackageManager.PERMISSION_GRANTED;
 public class MainActivity extends AppCompatActivity {
     private CameraRenderer mRenderer;
     private static final int REQUEST_CAMERA_PERMISSION = 200;
-    private DatabaseReference mDatabase;
+   // private DatabaseReference mDatabase;
 
 
     @Override
@@ -44,13 +44,13 @@ public class MainActivity extends AppCompatActivity {
         mRenderer.textViewBlendshapes = findViewById(R.id.text_view);
         mRenderer.textViewTimer = findViewById(R.id.text_timestamp);
 //Firebase
-        mDatabase = FirebaseDatabase.getInstance().getReference("fackitdata");
-        String userId = mDatabase.push().getKey();
+//        mDatabase = FirebaseDatabase.getInstance().getReference("fackitdata");
+//        String userId = mDatabase.push().getKey();
         // creating user object
-        User user = new User("Test", "prathamesh@ajnalens.com");
+        //User user = new User("Test", "prathamesh@ajnalens.com");
 
 // pushing user to 'users' node using the userId
-        mDatabase.child(userId).setValue(user);
+       // mDatabase.child(userId).setValue(user);
 
 
         if (Build.VERSION.SDK_INT >= 23) {
@@ -69,23 +69,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    @IgnoreExtraProperties
-    public class User {
-
-        public String name;
-        public String email;
-
-        // Default constructor required for calls to
-        // DataSnapshot.getValue(User.class)
-        public User() {
-        }
-
-        public User(String name, String email) {
-            this.name = name;
-            this.email = email;
-        }
-    }
-    @Override
+   @Override
     public void onPause(){
         super.onPause();
         mRenderer.onPause();
