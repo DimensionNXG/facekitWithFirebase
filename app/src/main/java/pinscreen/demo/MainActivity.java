@@ -7,9 +7,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 //Firebase
 import androidx.appcompat.app.AppCompatActivity;
+
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -22,13 +24,14 @@ import com.google.firebase.database.ValueEventListener;
 import pinscreen.demo.gl.CameraRenderer;
 
 import static android.content.pm.PackageManager.PERMISSION_GRANTED;
+import static java.security.AccessController.getContext;
 
 //import static android.support.v4.content.PermissionChecker.PERMISSION_GRANTED;
 
 public class MainActivity extends AppCompatActivity {
     private CameraRenderer mRenderer;
     private static final int REQUEST_CAMERA_PERMISSION = 200;
-   // private DatabaseReference mDatabase;
+    private DatabaseReference ref;
 
 
     @Override
@@ -44,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
         mRenderer.textViewBlendshapes = findViewById(R.id.text_view);
         mRenderer.textViewTimer = findViewById(R.id.text_timestamp);
 //Firebase
-//        mDatabase = FirebaseDatabase.getInstance().getReference("fackitdata");
+       ref = FirebaseDatabase.getInstance().getReference().getRoot().child("facekitdata");
 //        String userId = mDatabase.push().getKey();
         // creating user object
         //User user = new User("Test", "prathamesh@ajnalens.com");
@@ -85,5 +88,6 @@ public class MainActivity extends AppCompatActivity {
     public void onDestroy(){
         super.onDestroy();
         mRenderer.onDestroy();
+
     }
 }

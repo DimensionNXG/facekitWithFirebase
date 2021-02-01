@@ -30,6 +30,8 @@ import javax.microedition.khronos.opengles.GL10;
 import pinscreen.demo.R;
 import pinscreen.facekit.FaceKit;
 import pinscreen.facekit.anchordata.FaceKitAnchorData;
+import pinscreen.facekit.anchordata.FaceKitTransform;
+import pinscreen.facekit.anchordata.FaceKitVector4;
 
 /**
  * FaceKit demo
@@ -74,11 +76,14 @@ public class CameraRenderer extends GLSurfaceView implements GLSurfaceView.Rende
     private ByteBuffer mLandmarks;
     private ByteBuffer mTriangles;
     private ByteBuffer mPositions;
+    private float[] mgaze = new float [4];
+
     private float[] mTransformM = new float[16];
     private float[] mOrientationM = new float[16];
     private float[] mRatio = new float[2];
     private float[] mProjectionMat = new float[16];
     private float[] mModelMat = new float[16];
+    private float [] unity_array = new float[51];
 
     private int mIboTriangles = -1;
     private DatabaseReference mDatabase;
@@ -153,12 +158,16 @@ public class CameraRenderer extends GLSurfaceView implements GLSurfaceView.Rende
                     anchorData.transform.quaternion.x,
                     anchorData.transform.quaternion.y,
                     anchorData.transform.quaternion.z);
+            Log.i("FaceKit", "Quaternion= "+  String.format(Locale.US, "%.2f,%.2f,%.2f,%.2f",anchorData.transform.quaternion.w,anchorData.transform.quaternion.x,anchorData.
+                    transform.quaternion.y,anchorData.transform.quaternion.z));
 
             float[] t = new float[16]; // translation
             Matrix.setIdentityM(t, 0);
             t[12] = anchorData.transform.translation[0];
             t[13] = anchorData.transform.translation[1];
             t[14] = anchorData.transform.translation[2];
+            Log.i("FaceKit", "Translation = "+  String.format(Locale.US, "%.2f,%.2f,%.2f",anchorData.transform.translation[0],
+                    anchorData.transform.translation[1],anchorData.transform.translation[2]));
 
             float[] tmp = new float[16];
             Matrix.multiplyMM(tmp, 0, r, 0, s, 0);
@@ -312,68 +321,80 @@ public class CameraRenderer extends GLSurfaceView implements GLSurfaceView.Rende
     }
 
     public void onDestroy() {
+        Toast.makeText(mContext.getApplicationContext(),"onDestroy", Toast.LENGTH_SHORT).show();
         mFaceKit.stopRunning();
         mFaceKit = null;
+        mDatabase.setValue(null);
+        //mDatabase.child("facekitdata").child("facekitdata").removeValue();
+
     }
 
     private final static String[] blendShapes = {
-            "mouthRollLower",
-            "mouthStretch_L",
             "mouthSmile_R",
-            "cheekSquint_R",
-            "mouthFrown_L",
-            "cheekPuff",
-            "mouthSmile_L",
-            "mouthRollUpper",
-            "mouthPucker",
-            "mouthLowerDown_L",
-            "mouthFrown_R",
-            "mouthShrugLower",
-            "eyeLookDown_R",
+            "mouthStretch_L",
             "mouthStretch_R",
-            "eyeBlink_R",
-            "eyeSquint_R",
-            "eyeWide_R",
-            "eyeLookUp_R",
-            "browDown_R",
-            "mouthLowerDown_R",
-            "noseSneer_R",
-            "browOuterUp_R",
-            "mouthPress_L",
-            "browOuterUp_L",
-            "eyeLookUp_L",
-            "browInnerUp",
-            "mouthRight",
-            "eyeWide_L",
-            "mouthDimple_R",
-            "mouthFunnel",
-            "cheekSquint_L",
-            "mouthClose",
-            "mouthUpperUp_R",
             "mouthUpperUp_L",
-            "mouthPress_R",
-            "eyeLookIn_R",
-            "eyeLookOut_R",
-            "eyeLookIn_L",
-            "eyeLookOut_L",
-            "mouthLeft",
-            "eyeBlink_L",
-            "eyeLookDown_L",
-            "eyeSquint_L",
+            "mouthUpperUp_R",
             "noseSneer_L",
-            "mouthDimple_L",
+            "noseSneer_R",
             "browDown_L",
-            "jawRight",
+            "browDown_R",
+            "browInnerUp",
+            "browOuterUp_L",
+            "browOuterUp_R",
+            "cheekPuff",
+            "cheekSquint_L",
+            "cheekSquint_R",
+            "eyeBlink_L",
+            "eyeBlink_R",
+            "eyeLookDown_L",
+            "eyeLookDown_R",
+            "eyeLookIn_L",
+            "eyeLookIn_R",
+            "eyeLookOut_L",
+            "eyeLookOut_R",
+            "eyeLookUp_L",
+            "eyeLookUp_R",
+            "eyeSquint_L",
+            "eyeSquint_R",
+            "eyeWide_L",
+            "eyeWide_R",
             "jawForward",
-            "jawOpen",
-            "mouthShrugUpper",
             "jawLeft",
+            "jawOpen",
+            "mouthClose",
+            "jawRight",
+            "mouthDimple_L",
+            "mouthDimple_R",
+            "mouthFrown_L",
+            "mouthFrown_R",
+            "mouthFunnel",
+            "mouthLeft",
+            "mouthLowerDown_L",
+            "mouthLowerDown_R",
+            "mouthPress_L",
+            "mouthPress_R",
+            "mouthPucker",
+            "mouthRight",
+            "mouthRollLower",
+            "mouthRollUpper",
+            "mouthShrugLower",
+            "mouthShrugUpper",
+            "mouthSmile_L",
     };
 
     private class OnDataAvailableCallback implements FaceKit.OnDataAvailableListener {
         private long iterations = 0;
         private long totalFPS = 0;
         private double startTime = 0;
+        String mDeviceToWorldRotationString;
+        String mWorldFlippedString;
+        FaceKitVector4 mFaceKitVector4 = new FaceKitVector4();
+        FaceKitTransform mFaceKitTransform = new FaceKitTransform();
+
+      float[] mTranslation = mFaceKitTransform.translation;
+      float mScale = mFaceKitTransform.scale;
+
 
         @Override
         public void onDataAvailable(FaceKitAnchorData anchorData) {
@@ -392,8 +413,8 @@ public class CameraRenderer extends GLSurfaceView implements GLSurfaceView.Rende
             mWorldHeight = anchorData.texture.height;
             mDeviceToWorldRotation = anchorData.texture.rotation;
             mWorldFlipped = anchorData.texture.flipped;
+            mgaze = anchorData.gaze;
             updateOrientation(anchorData);
-
 
             mLandmarks.order(ByteOrder.LITTLE_ENDIAN);
             mLandmarks.position(0);
@@ -417,15 +438,63 @@ public class CameraRenderer extends GLSurfaceView implements GLSurfaceView.Rende
            // Toast.makeText(getContext(),"Landmarks"+ anchorData.landmarks, Toast.LENGTH_SHORT).show();
 
             StringBuilder stringBuilder = new StringBuilder();
-            for (int i = 0; i < 51; i++) {
+            StringBuilder stringValues = new StringBuilder();
+
+                    for (int i = 0; i < 51; i++) {
                 stringBuilder.append(String.format(Locale.US,"%s: %.2f\n", blendShapes[i], anchorData.blendShapes[i]));
+                stringValues.append(String.format(Locale.US,"%.2f,",anchorData.blendShapes[i]));
+               // stringValues.append(String.format(Locale.US,"%.2f,",unity_array[i]));
+
                 Log.i("FaceKit","Blendshapes [" + i + "] = " + Float.toString(anchorData.blendShapes[i]) );
-                mDatabase.child("Blendshapes"+ i).setValue(Float.toString(anchorData.blendShapes[i]));
+               // mDatabase.child("Blendshapes"+ i).setValue(Float.toString(anchorData.blendShapes[i]));
                 //Toast.makeText(getContext(),"BlendShapes["+i+"]= " + anchorData.blendShapes[i], Toast.LENGTH_LONG).show();
 
             }
 
             final String text = stringBuilder.toString();
+//            mDeviceToWorldRotationString = String.valueOf(mDeviceToWorldRotation);
+//            mWorldFlippedString = String.valueOf(mWorldFlipped);
+                    //Added two more values at the end of the array
+           // stringValues.append(String.format(Locale.US,"%d,%d",mDeviceToWorldRotation, mWorldFlipped));
+            for (int i = 0; i < anchorData.landmarks.length; i++){
+                Log.i("FaceKit", "Landmarks = "+ String.format(Locale.US, "%.2f", anchorData.landmarks[i]));
+            }
+            //x,y,z,w are the values from FaceKitVector4 Class
+            stringValues.append(String.format(Locale.US,"%.2f,%.2f,%.2f,%.2f,",
+                    anchorData.transform.quaternion.x,
+                    anchorData.transform.quaternion.y,
+                    anchorData.transform.quaternion.z,
+                    anchorData.transform.quaternion.w
+
+                    ));
+         //   Log.i("FaceKit","FaceKitVector4 Quaternion  :  " + String.format(Locale.US,"%.2f,%.2f,%.2f,%.2f,",mFaceKitVector4.x, mFaceKitVector4.y,mFaceKitVector4.z,mFaceKitVector4.w));
+
+            for(int i = 0; i <3; i++) {
+                stringValues.append(String.format(Locale.US, "%.2f,", anchorData.transform.translation[i]));
+                //Log.i("FaceKit", "Translation:= " + String.format(Locale.US, "%.2f", mFaceKitTransform.translation[i]));
+            }
+            stringValues.append(String.format(Locale.US,"%.2f,%d,", anchorData.transform.scale, anchorData.hasFace));
+
+            for(int i = 0; i <4; i++)
+            stringValues.append(String.format(Locale.US,"%.2f,",anchorData.gaze[i]));
+
+            stringValues.append(String.format(Locale.US, "%d,%d,%d,",
+                    anchorData.texture.height,
+                    anchorData.texture.width,
+                    anchorData.texture.flipped
+                    ));
+
+
+
+
+            //Added hasFace value
+           // String mface = String.valueOf(anchorData.hasFace);
+
+            final String fb_values= stringValues.toString();
+            //Log.i("FaceKit","Complete String :  " + fb_values );
+
+
+            mDatabase.child("facekitdata").setValue(fb_values);
 
             if (textViewBlendshapes != null) {
                 textViewBlendshapes.post(new Runnable() {
