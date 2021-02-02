@@ -3,7 +3,7 @@
     package="pinscreen.demo">
 
     <uses-permission android:name="android.permission.CAMERA" />
-
+    <uses-permission android:name="android.permission.INTERNET" />
     <uses-feature android:name="android.hardware.camera2.full" />
 
     <application
@@ -22,6 +22,30 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name=".MainActivityFaceKit"
+            android:windowSoftInputMode="stateHidden" />
+
+        <activity
+            android:name=".SignUpActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".SignInActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".HomeActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".ResetPasswordActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".EditProfileActivity"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".ProfileActivity"
+            android:windowSoftInputMode="stateHidden" />
+
     </application>
 
 </manifest>

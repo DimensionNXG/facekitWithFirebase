@@ -326,7 +326,6 @@ public class CameraRenderer extends GLSurfaceView implements GLSurfaceView.Rende
         mFaceKit = null;
         mDatabase.setValue(null);
         //mDatabase.child("facekitdata").child("facekitdata").removeValue();
-
     }
 
     private final static String[] blendShapes = {

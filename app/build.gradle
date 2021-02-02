@@ -11,7 +11,7 @@ android {
         versionName "1.0"
 
 
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
         ndk {
             // Specifies the ABI configurations of your native
             // libraries Gradle should build and package with your APK.
@@ -32,13 +32,15 @@ android {
 
 dependencies {
     //noinspection GradleCompatible
-    implementation 'com.android.support:design:26.1.0'
+    implementation 'com.google.android.material:material:1.0.0'
     implementation fileTree(dir: 'libs', include: ['*.aar'])
-    androidTestImplementation('com.android.support.test.espresso:espresso-core:2.2.2', {
+    implementation 'androidx.appcompat:appcompat:1.2.0'
+    implementation 'androidx.constraintlayout:constraintlayout:2.0.4'
+    androidTestImplementation('androidx.test.espresso:espresso-core:3.1.0', {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
     //noinspection GradleCompatible
-    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'androidx.appcompat:appcompat:1.0.0'
     testImplementation 'junit:junit:4.12'
     implementation 'com.google.firebase:firebase-core:15.0.0'
     //implementation platform('com.google.firebase:firebase-bom:26.3.0')
@@ -47,7 +49,19 @@ dependencies {
     //implementation 'com.google.firebase:firebase-database:19.3.1'
     //implementation 'com.google.firebase:firebase-storage:19.1.1'
     //implementation 'com.google.firebase:firebase-firestore:21.5.0'
+    //FirebaseAuthDepencies
+    implementation 'com.google.firebase:firebase-auth:16.0.1'
 
+    implementation 'com.google.firebase:firebase-database:16.0.1'
+    implementation 'com.google.firebase:firebase-storage:16.0.1'
+
+    implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'androidx.annotation:annotation:1.1.0'
+    implementation 'com.google.android.material:material:1.0.0'
+    //implementation 'com.android.support:appcompat-v7:27.1.0'
+    //noinspection GradleCompatible
+   // implementation 'com.android.support:design:26.1.0'
+    implementation 'com.google.android.material:material:1.0.0-rc01'
     implementation project(':facekit_aar')
 }
     apply plugin: 'com.google.gms.google-services'

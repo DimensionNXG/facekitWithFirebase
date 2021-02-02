@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/.idea/facekitWithFirebase.iml" filepath="$PROJECT_DIR$/.idea/facekitWithFirebase.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/facekitWithFirebase.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/facekitWithFirebase.app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/facekit_aar/facekitWithFirebase.facekit_aar.iml" filepath="$PROJECT_DIR$/.idea/modules/facekit_aar/facekitWithFirebase.facekit_aar.iml" />
+    </modules>
+  </component>
+</project>
